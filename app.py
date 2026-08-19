@@ -45,6 +45,15 @@ st.markdown("""
         min-height: 100vh;
     }
 
+    /* Frame Alignment & Container Max-Width */
+    .main .block-container {
+        max-width: 860px !important;
+        padding-top: 2rem !important;
+        padding-bottom: 7rem !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
     /* Ambient Background Decorative Shapes */
     .bg-shape-1 {
         position: fixed;
@@ -219,7 +228,7 @@ st.markdown("""
     .hero-wrapper {
         position: relative;
         z-index: 1;
-        padding: 1.5rem 0 2rem 0;
+        padding: 1.5rem 0 1.75rem 0;
         max-width: 820px;
         margin: 0 auto;
         text-align: center;
@@ -305,12 +314,24 @@ st.markdown("""
         backdrop-filter: blur(8px);
     }
 
-    /* Chat Input Styling */
+    /* Seamless Floating Chat Input Frame */
+    div[data-testid="stBottom"], .stChatFloatingInputContainer {
+        background: transparent !important;
+        border: none !important;
+    }
+
+    div[data-testid="stBottom"] > div {
+        background: transparent !important;
+        max-width: 860px !important;
+        margin: 0 auto !important;
+        padding-bottom: 1rem !important;
+    }
+
     div[data-testid="stChatInput"] {
         border-radius: 14px !important;
         background-color: var(--bg-nav) !important;
         border: 1px solid var(--border-subtle) !important;
-        box-shadow: none !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
     }
 
     div[data-testid="stChatInput"]:focus-within {
@@ -346,8 +367,15 @@ if "messages" not in st.session_state:
 if "quick_prompt" not in st.session_state:
     st.session_state.quick_prompt = None
 
-# Webhook configuration
-webhook_url = os.getenv("N8N_WEBHOOK_URL", "").strip()
+# Webhook configuration (supports both local .env and Streamlit Cloud Secrets)
+webhook_url = os.getenv("N8N_WEBHOOK_URL", "")
+if not webhook_url:
+    try:
+        if "N8N_WEBHOOK_URL" in st.secrets:
+            webhook_url = st.secrets["N8N_WEBHOOK_URL"]
+    except Exception:
+        pass
+webhook_url = webhook_url.strip() if webhook_url else ""
 
 # --- SIDEBAR ---
 with st.sidebar:
@@ -485,7 +513,7 @@ st.markdown("""
 
 # Missing Webhook Warning
 if not webhook_url:
-    st.warning("`N8N_WEBHOOK_URL` is not set in `.env`. Configure your webhook URL to enable live executions.", icon="⚠️")
+    st.warning("`N8N_WEBHOOK_URL` is not configured. On Streamlit Cloud, add `N8N_WEBHOOK_URL` in **App Settings > Secrets**; locally, set it in `.env`.", icon="⚠️")
 
 # Display Message History
 for message in st.session_state.messages:
@@ -514,7 +542,7 @@ if active_message:
     # Process response via n8n webhook
     with st.chat_message("assistant", avatar="⚡"):
         if not webhook_url:
-            error_msg = "Error: No n8n webhook URL configured. Please set `N8N_WEBHOOK_URL` in your `.env` file."
+            error_msg = "Error: No n8n webhook URL configured. Please set `N8N_WEBHOOK_URL` in Streamlit Cloud Secrets (or `.env` locally)."
             st.error(error_msg)
             st.session_state.messages.append({"role": "assistant", "content": error_msg})
         else:
