@@ -10,7 +10,7 @@ load_dotenv()
 
 # Page configuration
 st.set_page_config(
-    page_title="Leo | AI Executive Assistant",
+    page_title="Leo | AI Student & Daily Assistant",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -81,12 +81,12 @@ st.markdown("""
     section[data-testid="stSidebar"] {
         background-color: var(--bg-nav) !important;
         border-right: 1px solid var(--border-subtle) !important;
-        padding-top: 1rem;
+        padding-top: 1.25rem;
     }
 
     section[data-testid="stSidebar"] hr {
         border-color: var(--border-subtle) !important;
-        margin: 1.25rem 0 !important;
+        margin: 1.15rem 0 !important;
     }
 
     .sidebar-section-label {
@@ -95,11 +95,11 @@ st.markdown("""
         text-transform: uppercase !important;
         letter-spacing: 0.08em !important;
         color: var(--text-muted) !important;
-        margin-bottom: 0.75rem !important;
+        margin-bottom: 0.65rem !important;
     }
 
     .sidebar-brand-title {
-        font-size: 1.25rem;
+        font-size: 1.3rem;
         font-weight: 800;
         letter-spacing: -0.02em;
         color: var(--text-primary);
@@ -162,7 +162,7 @@ st.markdown("""
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 10px;
+        padding: 7px 10px;
         border-radius: 8px;
         margin-bottom: 4px;
         background: rgba(255, 255, 255, 0.02);
@@ -178,17 +178,17 @@ st.markdown("""
     .tool-left {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
     }
 
     .tool-name {
-        font-size: 0.85rem;
+        font-size: 0.84rem;
         font-weight: 500;
         color: var(--text-primary);
     }
 
     .tool-desc {
-        font-size: 0.75rem;
+        font-size: 0.74rem;
         color: var(--text-muted);
     }
 
@@ -198,13 +198,14 @@ st.markdown("""
         border: 1px solid var(--border-subtle) !important;
         border-radius: 10px !important;
         color: var(--text-secondary) !important;
-        font-size: 0.82rem !important;
+        font-size: 0.81rem !important;
         font-weight: 500 !important;
         text-align: left !important;
-        padding: 10px 12px !important;
-        margin-bottom: 6px !important;
+        padding: 9px 12px !important;
+        margin-bottom: 5px !important;
         transition: all 0.2s ease !important;
         box-shadow: none !important;
+        line-height: 1.35 !important;
     }
 
     div[data-testid="stSidebar"] .stButton > button:hover {
@@ -350,8 +351,8 @@ webhook_url = os.getenv("N8N_WEBHOOK_URL", "").strip()
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.markdown('<div class="sidebar-brand-title">Leo Executive</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-brand-sub">Autonomous Agentic Workflow</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-brand-title">Leo AI</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-brand-sub">Smart Academic & Daily Assistant</div>', unsafe_allow_html=True)
     
     # Status Badge
     if webhook_url:
@@ -367,16 +368,16 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # SECTION 1: Connected Workspace Tools
+    # SECTION 1: Connected Workspace Tools (Student-tailored descriptions)
     st.markdown('<div class="sidebar-section-label">Connected Workspace Tools</div>', unsafe_allow_html=True)
     
     tools = [
-        ("Google Calendar", "Schedules & Events", True),
-        ("Gmail Inbox", "Read, Summarize, Send", True),
-        ("Google Tasks", "To-Dos & Reminders", True),
-        ("Google Docs", "Executive Notes", True),
-        ("Google Sheets", "Expense Ledger", True),
-        ("Web Search", "Real-Time Research", True),
+        ("Google Calendar", "Classes & Exams", True),
+        ("Gmail Inbox", "Professors & College", True),
+        ("Google Tasks", "Assignments & Deadlines", True),
+        ("Google Docs", "Lecture Notes & Study", True),
+        ("Google Sheets", "Student Budget & Expenses", True),
+        ("Web Search", "Research & Topic Search", True),
     ]
     
     for name, desc, connected in tools:
@@ -393,15 +394,16 @@ with st.sidebar:
         
     st.markdown("---")
     
-    # SECTION 2: Prompt Suggestions / Quick Actions
-    st.markdown('<div class="sidebar-section-label">Quick Suggestions</div>', unsafe_allow_html=True)
+    # SECTION 2: Student-focused Quick Suggestions
+    st.markdown('<div class="sidebar-section-label">Student Quick Prompts</div>', unsafe_allow_html=True)
     
     quick_actions = [
-        "What's on my schedule for today?",
-        "Summarize my unread emails from this morning",
-        "Add task: Review Q3 strategy deck",
-        "Record expense: $42 for client lunch",
-        "Append note: Key decisions from leadership sync",
+        "📅 What classes and deadlines do I have today?",
+        "📧 Check latest emails from my professors",
+        "✅ Add task: Submit Project report by Friday 5 PM",
+        "💰 Record expense: $14 for campus lunch & printouts",
+        "📝 Append note: Key concepts from today's lecture",
+        "🔍 Explain neural networks & backpropagation simply",
     ]
     
     for prompt in quick_actions:
@@ -414,22 +416,27 @@ with st.sidebar:
     # SECTION 3: Session Controls
     st.markdown('<div class="sidebar-section-label">Session Controls</div>', unsafe_allow_html=True)
     
-    col_c1, col_c2 = st.columns(2)
-    with col_c1:
+    if st.session_state.messages:
+        col_c1, col_c2 = st.columns(2)
+        with col_c1:
+            if st.button("Clear Chat", use_container_width=True):
+                st.session_state.messages = []
+                st.session_state.quick_prompt = None
+                st.rerun()
+        with col_c2:
+            chat_export = json.dumps(st.session_state.messages, indent=2)
+            st.download_button(
+                label="Export History",
+                data=chat_export,
+                file_name=f"leo_student_session_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                mime="application/json",
+                use_container_width=True
+            )
+    else:
         if st.button("Clear Chat", use_container_width=True):
             st.session_state.messages = []
             st.session_state.quick_prompt = None
             st.rerun()
-    with col_c2:
-        if st.session_state.messages:
-            chat_export = json.dumps(st.session_state.messages, indent=2)
-            st.download_button(
-                label="Export",
-                data=chat_export,
-                file_name=f"leo_session_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-                mime="application/json",
-                use_container_width=True
-            )
 
 
 # --- MAIN HERO / HEADER SECTION ---
@@ -437,10 +444,10 @@ with st.sidebar:
 st.markdown("""
 <div class="hero-wrapper">
     <div class="hero-heading">
-        Executive clarity.<br/>Automated workflow.
+        Study smarter.<br/>Automate everyday tasks.
     </div>
     <div class="hero-subtext">
-        Leo manages your calendar, orchestrates email communications, tracks critical tasks, logs expenses, and conducts live research through a unified n8n agentic workflow.
+        Leo helps you manage class schedules, summarize professor emails, track assignment deadlines, log student expenses, and conduct research through your autonomous n8n workflow.
     </div>
     <div class="stat-row">
         <div class="stat-item">
@@ -449,29 +456,29 @@ st.markdown("""
         </div>
         <div class="stat-item">
             <span class="stat-number">&lt; 2s</span>
-            <span class="stat-label">Avg Execution</span>
+            <span class="stat-label">Fast Execution</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">24/7</span>
+            <span class="stat-label">Study Assistant</span>
         </div>
         <div class="stat-item">
             <span class="stat-number">100%</span>
-            <span class="stat-label">Privacy First</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-number">99.9%</span>
-            <span class="stat-label">Workflow Uptime</span>
+            <span class="stat-label">Personal & Secure</span>
         </div>
     </div>
     <div class="secondary-feature-row">
-        <span>Calendar Scheduling</span>
+        <span>Class Schedules</span>
         <span class="feature-divider">|</span>
-        <span>Inbox Synthesis</span>
+        <span>Professor Emails</span>
         <span class="feature-divider">|</span>
-        <span>Google Tasks</span>
+        <span>Assignments & Deadlines</span>
         <span class="feature-divider">|</span>
-        <span>Executive Docs</span>
+        <span>Lecture Notes</span>
         <span class="feature-divider">|</span>
-        <span>Expense Tracking</span>
+        <span>Student Budget</span>
         <span class="feature-divider">|</span>
-        <span>Live Search</span>
+        <span>Fast Research</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -492,8 +499,8 @@ if st.session_state.quick_prompt:
     pending_prompt = st.session_state.quick_prompt
     st.session_state.quick_prompt = None
 
-# Chat Input Bar with refined placeholder
-user_message = st.chat_input("Message Leo... (e.g. Schedule a meeting tomorrow at 10 AM, summarize unread emails)")
+# Chat Input Bar with refined student-friendly placeholder
+user_message = st.chat_input("Ask Leo... (e.g. When is my next assignment due?, log $12 expense for books)")
 
 # Determine final message to send
 active_message = user_message or pending_prompt
