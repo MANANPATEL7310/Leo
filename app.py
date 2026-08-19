@@ -8,12 +8,12 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Page configuration
+# Page configuration - Using default centered layout to keep the frame well-proportioned
 st.set_page_config(
     page_title="Leo | AI Student & Daily Assistant",
     page_icon="⚡",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
 # Custom CSS implementing the complete DataWars-style dark indigo design system
@@ -38,21 +38,25 @@ st.markdown("""
     }
 
     /* Overall Page Background & Typography */
-    .stApp {
-        background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-base) 50%, var(--bg-gradient-end) 100%) !important;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-        color: var(--text-primary) !important;
-        min-height: 100vh;
-    }
+.stApp {
+    background: linear-gradient(
+        135deg,
+        var(--bg-gradient-start) 0%,
+        var(--bg-base) 50%,
+        var(--bg-gradient-end) 100%
+    ) !important;
 
-    /* Frame Alignment & Container Max-Width */
-    .main .block-container {
-        max-width: 860px !important;
-        padding-top: 2rem !important;
-        padding-bottom: 7rem !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    color: var(--text-primary) !important;
+}
+
+.main .block-container {
+    max-width: 900px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-top: 1.5rem !important;
+    padding-bottom: 1rem !important;
+}
 
     /* Ambient Background Decorative Shapes */
     .bg-shape-1 {
@@ -229,13 +233,12 @@ st.markdown("""
         position: relative;
         z-index: 1;
         padding: 1.5rem 0 1.75rem 0;
-        max-width: 820px;
-        margin: 0 auto;
+        width: 100%;
         text-align: center;
     }
 
     .hero-heading {
-        font-size: 2.75rem;
+        font-size: 2.5rem;
         font-weight: 800;
         letter-spacing: -0.03em;
         line-height: 1.15;
@@ -244,11 +247,11 @@ st.markdown("""
     }
 
     .hero-subtext {
-        font-size: 1.05rem;
+        font-size: 1rem;
         font-weight: 400;
         color: var(--text-secondary);
         line-height: 1.6;
-        max-width: 640px;
+        max-width: 580px;
         margin: 0 auto 1.75rem auto;
     }
 
@@ -258,7 +261,7 @@ st.markdown("""
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        gap: 3rem;
+        gap: 2.25rem;
         padding: 1.25rem 0;
         border-top: 1px solid var(--border-subtle);
         border-bottom: 1px solid var(--border-subtle);
@@ -272,7 +275,7 @@ st.markdown("""
     }
 
     .stat-number {
-        font-size: 1.85rem;
+        font-size: 1.75rem;
         font-weight: 800;
         letter-spacing: -0.02em;
         color: var(--accent-soft);
@@ -280,7 +283,7 @@ st.markdown("""
     }
 
     .stat-label {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         font-weight: 500;
         color: var(--text-muted);
         text-transform: uppercase;
@@ -294,8 +297,8 @@ st.markdown("""
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        gap: 12px;
-        font-size: 0.82rem;
+        gap: 10px;
+        font-size: 0.8rem;
         color: var(--text-secondary);
     }
 
@@ -314,17 +317,11 @@ st.markdown("""
         backdrop-filter: blur(8px);
     }
 
-    /* Seamless Floating Chat Input Frame */
+    /* Bottom Chat Input Frame */
     div[data-testid="stBottom"], .stChatFloatingInputContainer {
         background: transparent !important;
         border: none !important;
-    }
-
-    div[data-testid="stBottom"] > div {
-        background: transparent !important;
-        max-width: 860px !important;
-        margin: 0 auto !important;
-        padding-bottom: 1rem !important;
+        padding-bottom: 6rem;
     }
 
     div[data-testid="stChatInput"] {
